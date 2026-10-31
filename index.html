@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#16a34a">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Merma Ganado</title>
+<style>
+:root{--g:#16a34a;--gd:#15803d;--gl:#dcfce7;--red:#dc2626;--blue:#2563eb;--bluebg:#eff6ff;--pink:#db2777;--pinkbg:#fdf2f8;--tx:#1e293b;--mu:#64748b;--bd:#e2e8f0;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#f0fdf4;color:var(--tx);padding:12px 12px 80px;max-width:640px;margin:0 auto;font-size:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+header.top{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff;border-radius:var(--r);padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+header.top h1{font-size:1.1rem;line-height:1.25}
+header.top small{display:block;font-weight:400;font-size:.8rem;opacity:.9}
+.btn-g{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:10px;padding:10px 12px;font:inherit;font-weight:700;white-space:nowrap;cursor:pointer}
+.card{background:#fff;border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.card h3{font-size:1rem;color:var(--gd);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--gl);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+label{display:block;font-size:.85rem;font-weight:600;color:var(--mu);margin-bottom:5px}
+.fg{margin-bottom:12px}
+input,textarea{width:100%;padding:12px 14px;border:2px solid var(--bd);border-radius:10px;font:inherit;font-size:1.05rem;background:#fff;color:var(--tx)}
+input:focus,textarea:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+input[readonly]{background:#f1f5f9;font-weight:700;color:#1e40af}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+table{width:100%;border-collapse:collapse}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;color:var(--mu);padding:4px;text-align:center}
+td{padding:4px;text-align:center}
+td.n{width:30px;color:var(--mu);font-weight:700}
+td input{text-align:center;font-size:1.15rem;font-weight:600}
+.x{background:#fee2e2;color:var(--red);border:0;border-radius:10px;width:42px;height:46px;font-size:1rem;font-weight:700;cursor:pointer}
+.tot{display:flex;justify-content:space-between;gap:8px;background:var(--gl);border-radius:10px;padding:10px 12px;margin-top:10px;font-weight:700;flex-wrap:wrap}
+.res{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:4px 12px;margin-top:10px}
+.res>div{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px dashed #cbd5e1;font-size:.95rem}
+.res>div:last-child{border-bottom:0}
+.res span:first-child{color:var(--mu);font-weight:600}
+.res .v{font-weight:800;color:#0f172a;text-align:right}
+.res .merma .v{color:var(--red);font-size:1.15rem}
+.m h3{color:var(--blue)}.m .res{background:var(--bluebg);border-color:#bfdbfe}
+.h h3{color:var(--pink)}.h .res{background:var(--pinkbg);border-color:#fbcfe8}
+.aviso{font-size:.8rem;color:var(--red);font-weight:600;min-height:1em;margin-top:4px}
+.obs label{color:var(--red);font-weight:800;font-size:.95rem}
+.obs textarea{min-height:110px;color:var(--red);font-weight:600;border-color:#fca5a5}
+.obs textarea::placeholder{color:#f87171;font-weight:400}
+.rojo{color:var(--red);font-weight:600;white-space:pre-wrap;line-height:1.5}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border:0;border-radius:12px;font:inherit;font-weight:700;margin-bottom:10px;cursor:pointer;padding:12px}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.6}
+.p{background:linear-gradient(135deg,var(--g),var(--gd));color:#fff}
+.b{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
+.s{background:#475569;color:#fff}
+.d{background:#fff;color:var(--red);border:2px solid #fecaca}
+#alertas{position:sticky;top:0;z-index:30}
+.alerta{background:#fee2e2;border:2px solid var(--red);color:#991b1b;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-weight:700;font-size:.92rem;box-shadow:0 4px 12px rgba(220,38,38,.25)}
+.ver>div{padding:6px 0;font-size:.92rem;border-bottom:1px dashed var(--bd)}
+.ver>div:last-child{border-bottom:0}
+.ver .bad{color:#991b1b;font-weight:700}.ver .ok{color:var(--gd)}.ver .pend{color:var(--mu)}
+.guard{font-size:.78rem;color:var(--g);text-align:right;min-height:18px;font-weight:600}
+#vista-resumen,#vista-guardados{display:none}
+.rep-head{background:#fff;border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);border-top:5px solid var(--g)}
+.rep-head h2{color:var(--gd);font-size:1.15rem;text-align:center;margin-bottom:10px}
+.datos div{padding:3px 0;font-size:.92rem}.datos b{color:var(--gd)}
+.folio{font-size:.8rem;font-weight:600;color:var(--mu)}
+.gtab th,.gtab td{border-bottom:1px solid var(--bd);padding:7px 4px;font-size:.92rem}
+.gtab tfoot td{font-weight:800;border-top:2px solid var(--g);border-bottom:0}
+.item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bd)}
+.item:last-child{border-bottom:0}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block}.item .t small{color:var(--mu)}
+.item button{border:0;border-radius:10px;padding:10px 12px;font:inherit;font-weight:700;cursor:pointer}
+.vacio{color:var(--mu);text-align:center;padding:20px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:50;font-weight:600;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+.w{background:#25d366;color:#052e16}
+pre.wa{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.9rem;line-height:1.45;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:10px;padding:12px}
+@media print{
+ body{background:#fff;padding:0;max-width:none;font-size:11pt}
+ .no-print,header.top,#toast{display:none!important}
+ .card,.rep-head{box-shadow:none;border:1px solid #cbd5e1;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>🐂 Recepción y Merma de Ganado<small>Pesaje y cálculo en corral</small></h1>
+  <button class="btn-g" type="button" onclick="verGuardados()">📂 Guardados (<span id="n-guardados">0</span>)</button>
+</header>
+
+<!-- ============ CAPTURA ============ -->
+<div id="vista-edicion">
+  <div id="alertas"></div>
+
+  <div class="card">
+    <h3>1. Datos del embarque</h3>
+    <div class="row2">
+      <div class="fg"><label for="ca">CA</label><input id="ca" type="text" autocomplete="off" autocapitalize="characters" placeholder="Ej: MAPASTEPEC CHIAPAS"></div>
+      <div class="fg"><label for="sk">Folio SK</label><input id="sk" type="text" autocomplete="off" placeholder="Ej: SK-8849"></div>
+    </div>
+    <div class="fg"><label for="fecha">Fecha y hora de llegada</label><input id="fecha" type="datetime-local"></div>
+    <div class="fg" style="margin-bottom:0"><label for="corral">Corral # (opcional, solo el número)</label><input id="corral" type="text" autocomplete="off" autocapitalize="characters" placeholder="Ej: 3"></div>
+  </div>
+
+  <div class="card">
+    <h3>2. Pesaje por grupos <span class="folio" id="tag-tot">0 cab · 0 kg</span></h3>
+    <table>
+      <thead><tr><th></th><th>Cabezas</th><th>Peso (kg)</th><th></th></tr></thead>
+      <tbody id="grupos"></tbody>
+    </table>
+    <button id="btn-add" class="btn b" type="button" style="margin-top:12px;margin-bottom:0" onclick="agregarFila('','',true)">➕ Agregar grupo</button>
+    <div class="res">
+      <div><span>Cabezas totales</span><span class="v" id="r-g-cab">0</span></div>
+      <div><span>Peso de llegada total (PLL)</span><span class="v" id="r-g-pll">0 kg</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Resultado general</h3>
+    <div class="fg"><label for="po">Peso de origen total – PO (de la documentación, kg)</label><input id="po" type="number" inputmode="decimal" step="any" min="0" placeholder="Ej: 23444"></div>
+    <div class="res">
+      <div><span>Prom. origen (PPO)</span><span class="v" id="r-g-ppo">0.00 kg</span></div>
+      <div><span>Prom. llegada (PPLL)</span><span class="v" id="r-g-ppll">0.00 kg</span></div>
+      <div class="merma"><span>Merma</span><span class="v" id="r-g-merma">0.00 %</span></div>
+    </div>
+  </div>
+
+  <div class="card m">
+    <h3>4. ♂ Machos</h3>
+    <div class="row2">
+      <div class="fg"><label for="m-cab">Cabezas</label><input id="m-cab" type="number" inputmode="numeric" min="0" step="1" placeholder="Ej: 50"></div>
+      <div class="fg"><label for="m-folio">Folio interno machos</label><input id="m-folio" type="text" autocomplete="off" placeholder="Ej: 1234"></div>
+    </div>
+    <div class="fg"><label for="m-po">Peso de origen – PO (documentación, kg)</label><input id="m-po" type="number" inputmode="decimal" step="any" min="0" placeholder="Ej: 16110"></div>
+    <div class="res">
+      <div><span>Peso de llegada (PLL = PPLL × cabezas)</span><span class="v" id="r-m-pll">0 kg</span></div>
+      <div><span>Prom. origen (PPO)</span><span class="v" id="r-m-ppo">0.00 kg</span></div>
+      <div><span>Prom. llegada (PPLL)</span><span class="v" id="r-m-ppll">0.00 kg</span></div>
+      <div class="merma"><span>Merma machos</span><span class="v" id="r-m-merma">0.00 %</span></div>
+    </div>
+  </div>
+
+  <div class="card h">
+    <h3>5. ♀ Hembras</h3>
+    <div class="row2">
+      <div class="fg"><label for="h-cab">Cabezas</label><input id="h-cab" type="number" inputmode="numeric" min="0" step="1" placeholder="Ej: 24"></div>
+      <div class="fg"><label for="h-folio">Folio interno hembras (automático)</label><input id="h-folio" type="text" readonly placeholder="Consecutivo de machos"><div class="aviso" id="folio-aviso"></div></div>
+    </div>
+    <div class="fg"><label for="h-po">Peso de origen – PO (documentación, kg)</label><input id="h-po" type="number" inputmode="decimal" step="any" min="0" placeholder="Ej: 7334"></div>
+    <div class="res">
+      <div><span>Peso de llegada (PLL = PPLL × cabezas)</span><span class="v" id="r-h-pll">0 kg</span></div>
+      <div><span>Prom. origen (PPO)</span><span class="v" id="r-h-ppo">0.00 kg</span></div>
+      <div><span>Prom. llegada (PPLL)</span><span class="v" id="r-h-ppll">0.00 kg</span></div>
+      <div class="merma"><span>Merma hembras</span><span class="v" id="r-h-merma">0.00 %</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Verificación</h3>
+    <div class="ver" id="verif"></div>
+  </div>
+
+  <div class="card obs">
+    <h3 style="color:var(--red);border-color:#fecaca">6. Observaciones</h3>
+    <label for="obs">Escribe aquí las observaciones</label>
+    <textarea id="obs" placeholder="Notas, incidencias o comentarios..."></textarea>
+  </div>
+
+  <button id="btn-generar" class="btn p" type="button" onclick="generar()">📄 Generar resumen</button>
+  <button class="btn d" type="button" onclick="reiniciar()">🔄 Reiniciar todo (nuevo registro)</button>
+  <div class="guard" id="guard"></div>
+</div>
+
+<!-- ============ RESUMEN ============ -->
+<div id="vista-resumen">
+  <div id="reporte"></div>
+  <div id="rep-botones" class="no-print"></div>
+</div>
+
+<!-- ============ GUARDADOS ============ -->
+<div id="vista-guardados">
+  <div class="card"><h3>📂 Reportes guardados</h3><div id="lista"></div></div>
+  <button class="btn s" type="button" onclick="mostrar('edicion')">⬅️ Volver a la captura</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY_BORRADOR = 'merma-borrador-v1';
+const KEY_REP = 'merma-reportes-v1';
+let reporteActual = null;
+// true cuando corre dentro del APK (WebView): ahí no hay impresión ni hace falta service worker
+const EN_APK = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+
+// <LOGICA>
+// Tus reportes CORTAN (no redondean) a 2 decimales: PPLL 21218 / 74 = 286.7297 -> 286.72, merma 13.3458 -> 13.34.
+// Si prefieres redondear, cambia true por false.
+const TRUNCAR = true;
+
+function num(v){ const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return Number.isFinite(n) ? n : 0; }
+function round2(x){ return Math.round((x + Number.EPSILON) * 100) / 100; }
+function trunc2(x){ return (x < 0 ? -1 : 1) * Math.floor(Math.abs(x) * 100 + 1e-6) / 100; }
+function rd(x){ return TRUNCAR ? trunc2(x) : round2(x); }
+
+function fmt(n, dec){
+  n = Number(n);
+  if (Math.abs(n) < 0.5 * Math.pow(10, -dec)) n = 0;
+  return n.toLocaleString('es-MX', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function fmtKg(n){ return Number(n).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+
+// Folio de hembras = folio de machos + 1 (conserva ceros y prefijos: FM-01 -> FM-02)
+function siguienteFolio(f){
+  f = String(f || '').trim();
+  const m = f.match(/^(.*?)(\d+)(\D*)$/);
+  if (!m) return null;
+  return m[1] + (BigInt(m[2]) + 1n).toString().padStart(m[2].length, '0') + m[3];
+}
+
+function calcular(d){
+  let cab = 0, pll = 0;
+  (d.grupos || []).forEach(g => { cab += num(g.cab); pll += num(g.peso); });
+  pll = round2(pll);
+  const po = num(d.po);
+  const ppll = cab > 0 ? rd(pll / cab) : 0;
+  const g = { cab, po, pll, ppo: cab > 0 ? rd(po / cab) : 0, ppll,
+              merma: (cab > 0 && po > 0) ? rd(((po - pll) / po) * 100) : 0 };
+  const sexo = (c, p) => {
+    const cc = num(c), pp = num(p), sp = round2(cc * ppll);
+    return { cab: cc, po: pp, pll: sp, ppo: cc > 0 ? rd(pp / cc) : 0, ppll,
+             merma: (cc > 0 && pp > 0) ? rd(((pp - sp) / pp) * 100) : 0 };
+  };
+  return { g, m: sexo(d.mCab, d.mPo), h: sexo(d.hCab, d.hPo), hFolio: siguienteFolio(d.mFolio) || '' };
+}
+
+// ok:true = cuadra, ok:false = ALERTA, ok:null = falta capturar
+function verificar(d, c){
+  const out = [];
+  const lleno = v => String(v == null ? '' : v).trim() !== '';
+  if (c.g.cab > 0 && lleno(d.mCab) && lleno(d.hCab)) {
+    const s = c.m.cab + c.h.cab;
+    out.push(s === c.g.cab
+      ? { ok: true,  t: `Cabezas: ${fmt(c.m.cab,0)} machos + ${fmt(c.h.cab,0)} hembras = ${fmt(s,0)}, coincide con lo pesado.` }
+      : { ok: false, t: `Las cabezas no coinciden: machos (${fmt(c.m.cab,0)}) + hembras (${fmt(c.h.cab,0)}) = ${fmt(s,0)}, pero se pesaron ${fmt(c.g.cab,0)} (diferencia de ${fmt(Math.abs(s - c.g.cab),0)}).` });
+  } else {
+    out.push({ ok: null, t: 'Cabezas: falta capturar machos y hembras para compararlas con lo pesado.' });
+  }
+  if (lleno(d.po) && lleno(d.mPo) && lleno(d.hPo)) {
+    const s = round2(c.m.po + c.h.po);
+    out.push(Math.abs(s - c.g.po) < 0.005
+      ? { ok: true,  t: `Peso de origen: ${fmtKg(c.m.po)} machos + ${fmtKg(c.h.po)} hembras = ${fmtKg(s)} kg, coincide con el PO total.` }
+      : { ok: false, t: `El peso de origen no coincide: machos (${fmtKg(c.m.po)}) + hembras (${fmtKg(c.h.po)}) = ${fmtKg(s)} kg, pero el PO total es ${fmtKg(c.g.po)} kg (diferencia de ${fmtKg(round2(Math.abs(s - c.g.po)))} kg).` });
+  } else {
+    out.push({ ok: null, t: 'Peso de origen: falta capturar el PO total, de machos y de hembras para compararlos.' });
+  }
+  return out;
+}
+// Mensaje para WhatsApp con el formato de "JAULA SK"
+function numMsg(n){ return String(round2(Number(n))); }
+function mensajeWhatsApp(d, c){
+  const m = String(d.fecha || '').match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  const fecha = m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  const hora = m ? m[4] + ':' + m[5] + 'HRS' : '';
+  const L = ['JAULA SK', 'CA ' + String(d.ca || '').trim().toUpperCase(), '',
+             'FOLIO SK: ' + String(d.sk || '').trim(), '',
+             'FECHA: ' + fecha, '',
+             'H. LLEGADA: ' + hora, ''];
+  const bloque = (titulo, folio, s) => [
+    titulo + ': ' + numMsg(s.cab) + 'CBZ', 'FOLIO: ' + folio, '',
+    'P.O: ' + numMsg(s.po) + 'KG', 'P.LL: ' + numMsg(s.pll) + 'KG',
+    'P.P.O: ' + s.ppo.toFixed(2) + 'KG', 'P.P.LL: ' + s.ppll.toFixed(2) + 'KG',
+    'MERMA: ' + s.merma.toFixed(2) + '%', ''];
+  if (c.m.cab > 0) L.push(...bloque('MACHOS', String(d.mFolio || '').trim(), c.m));
+  if (c.h.cab > 0) L.push(...bloque('HEMBRAS', c.hFolio, c.h));
+  L.push('TOTAL DE CABEZAS: ' + numMsg(c.g.cab));
+  const obs = String(d.obs || '').trim();
+  if (obs) L.push('', obs.charAt(0) === '⚠' ? obs : '⚠️' + obs);
+  const cor = String(d.corral || '').trim().replace(/^#\s*/, '');
+  if (cor) L.push('', 'CORRAL #' + cor.toUpperCase());
+  return L.join('\n');
+}
+// </LOGICA>
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+function ahoraLocal(){ const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); }
+function vacio(){ return { ca:'', sk:'', fecha: ahoraLocal(), corral:'', po:'', grupos:[{cab:'',peso:''}], mCab:'', mFolio:'', mPo:'', hCab:'', hPo:'', obs:'' }; }
+
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => e.classList.remove('on'), 2200); }
+
+function mostrar(v){
+  ['edicion','resumen','guardados'].forEach(n => { $('vista-' + n).style.display = (n === v ? 'block' : 'none'); });
+  window.scrollTo(0, 0);
+}
+
+/* ---------- Captura ---------- */
+function renumerar(){ [...$('grupos').children].forEach((tr, i) => { tr.querySelector('.n').textContent = i + 1; }); }
+
+function agregarFila(cab, peso, enfocar){
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td class="n"></td>' +
+    '<td><input class="g-cab" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-label="Cabezas"></td>' +
+    '<td><input class="g-peso" type="number" inputmode="decimal" min="0" step="any" placeholder="0" aria-label="Peso en kg"></td>' +
+    '<td><button type="button" class="x" aria-label="Quitar grupo">✕</button></td>';
+  tr.querySelector('.g-cab').value = cab || '';
+  tr.querySelector('.g-peso').value = peso || '';
+  tr.querySelector('.x').onclick = () => { tr.remove(); if (!$('grupos').children.length) agregarFila('', ''); renumerar(); cambio(); };
+  $('grupos').appendChild(tr);
+  renumerar();
+  if (enfocar) tr.querySelector('.g-cab').focus();
+}
+
+function leer(){
+  return {
+    ca: $('ca').value, sk: $('sk').value, fecha: $('fecha').value, corral: $('corral').value, po: $('po').value,
+    grupos: [...document.querySelectorAll('#grupos tr')].map(tr => ({ cab: tr.querySelector('.g-cab').value, peso: tr.querySelector('.g-peso').value })),
+    mCab: $('m-cab').value, mFolio: $('m-folio').value, mPo: $('m-po').value,
+    hCab: $('h-cab').value, hPo: $('h-po').value, obs: $('obs').value
+  };
+}
+
+function escribir(d){
+  $('ca').value = d.ca || ''; $('sk').value = d.sk || ''; $('fecha').value = d.fecha || ''; $('corral').value = d.corral || '';
+  $('po').value = d.po || '';
+  $('m-cab').value = d.mCab || ''; $('m-folio').value = d.mFolio || ''; $('m-po').value = d.mPo || '';
+  $('h-cab').value = d.hCab || ''; $('h-po').value = d.hPo || ''; $('obs').value = d.obs || '';
+  $('grupos').innerHTML = '';
+  const gs = (d.grupos && d.grupos.length) ? d.grupos : [{cab:'',peso:''}];
+  gs.forEach(g => agregarFila(g.cab, g.peso, false));
+  pintar(leer());
+}
+
+function setRes(p, s){
+  if ($('r-' + p + '-cab')) $('r-' + p + '-cab').textContent = fmt(s.cab, 0);
+  $('r-' + p + '-pll').textContent = fmtKg(s.pll) + ' kg';
+  $('r-' + p + '-ppo').textContent = fmt(s.ppo, 2) + ' kg';
+  $('r-' + p + '-ppll').textContent = fmt(s.ppll, 2) + ' kg';
+  $('r-' + p + '-merma').textContent = fmt(s.merma, 2) + ' %';
+}
+
+function pintar(d){
+  const c = calcular(d);
+  $('tag-tot').textContent = fmt(c.g.cab, 0) + ' cab · ' + fmtKg(c.g.pll) + ' kg';
+  setRes('g', c.g); setRes('m', c.m); setRes('h', c.h);
+  $('h-folio').value = c.hFolio;
+  $('folio-aviso').textContent = (String(d.mFolio).trim() !== '' && !c.hFolio) ? 'El folio de machos debe terminar en número para generar el consecutivo.' : '';
+  const v = verificar(d, c);
+  $('alertas').innerHTML = v.filter(x => x.ok === false).map(x => '<div class="alerta">⚠️ ' + esc(x.t) + '</div>').join('');
+  $('verif').innerHTML = v.map(x => '<div class="' + (x.ok === true ? 'ok' : x.ok === false ? 'bad' : 'pend') + '">' + (x.ok === true ? '✅ ' : x.ok === false ? '⚠️ ' : '⏳ ') + esc(x.t) + '</div>').join('');
+}
+
+function cambio(){
+  const d = leer();
+  pintar(d);
+  try { localStorage.setItem(KEY_BORRADOR, JSON.stringify(d)); $('guard').textContent = '✔ Guardado automáticamente'; } catch (e) { $('guard').textContent = ''; }
+}
+
+document.addEventListener('input', e => { if (e.target.closest('#vista-edicion')) cambio(); });
+
+// Enter: cabezas -> peso -> siguiente grupo (o crea uno nuevo)
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const t = e.target;
+  if (t.classList && t.classList.contains('g-cab')) { e.preventDefault(); t.closest('tr').querySelector('.g-peso').focus(); }
+  else if (t.classList && t.classList.contains('g-peso')) {
+    e.preventDefault();
+    const sig = t.closest('tr').nextElementSibling;
+    if (sig) sig.querySelector('.g-cab').focus(); else agregarFila('', '', true);
+  }
+});
+
+function reiniciar(){
+  const extra = (reporteActual && reporteActual.origen === 'nuevo' && !reporteActual.guardado) ? '\n\nOjo: el reporte que generaste todavía NO está guardado.' : '';
+  if (!confirm('¿Reiniciar todo y empezar un registro nuevo? Se borra lo capturado. Los reportes ya guardados no se borran.' + extra)) return;
+  try { localStorage.removeItem(KEY_BORRADOR); } catch (e) {}
+  reporteActual = null;
+  escribir(vacio());
+  $('guard').textContent = '';
+  mostrar('edicion');
+  toast('Listo para un nuevo registro');
+}
+
+/* ---------- Resumen ---------- */
+function generar(){
+  const d = leer(), c = calcular(d);
+  if (c.g.cab <= 0) { alert('Captura al menos un grupo de pesaje (cabezas y peso).'); return; }
+  const malos = verificar(d, c).filter(x => x.ok === false);
+  if (malos.length) alert('⚠️ ALERTA\n\n' + malos.map(x => x.t).join('\n\n'));
+  reporteActual = { datos: d, origen: 'nuevo', guardado: false };
+  renderReporte();
+  mostrar('resumen');
+}
+
+function filaR(l, v, cls){ return '<div class="' + (cls || '') + '"><span>' + l + '</span><span class="v">' + v + '</span></div>'; }
+function bloqueRes(s){
+  return filaR('Cabezas', fmt(s.cab, 0)) + filaR('Peso de origen (PO)', fmtKg(s.po) + ' kg') +
+         filaR('Peso de llegada (PLL)', fmtKg(s.pll) + ' kg') + filaR('Prom. origen (PPO)', fmt(s.ppo, 2) + ' kg') +
+         filaR('Prom. llegada (PPLL)', fmt(s.ppll, 2) + ' kg') + filaR('Merma', fmt(s.merma, 2) + ' %', 'merma');
+}
+function fechaBonita(f){
+  if (!f) return '—';
+  const d = new Date(f);
+  return isNaN(d) ? esc(f) : d.toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+function renderReporte(){
+  const d = reporteActual.datos, c = calcular(d), v = verificar(d, c);
+  reporteActual.msg = mensajeWhatsApp(d, c);
+  const filas = d.grupos.filter(g => num(g.cab) || num(g.peso));
+  const tabla = filas.map((g, i) => '<tr><td>' + (i + 1) + '</td><td>' + fmt(num(g.cab), 0) + '</td><td>' + fmtKg(num(g.peso)) + '</td></tr>').join('');
+  const malos = v.filter(x => x.ok === false);
+  $('reporte').innerHTML =
+    '<div class="rep-head"><h2>REPORTE DE RECEPCIÓN Y MERMA</h2><div class="datos">' +
+      '<div><b>CA:</b> ' + (esc(d.ca) || '—') + '</div>' +
+      '<div><b>Folio SK:</b> ' + (esc(d.sk) || '—') + '</div>' +
+      '<div><b>Llegada:</b> ' + fechaBonita(d.fecha) + '</div>' +
+      (d.corral.trim() ? '<div><b>Corral #:</b> ' + esc(d.corral) + '</div>' : '') +
+    '</div></div>' +
+    (malos.length ? '<div class="card" style="border:2px solid var(--red)"><h3 style="color:var(--red)">⚠️ Alertas</h3>' + malos.map(x => '<div class="alerta" style="box-shadow:none">' + esc(x.t) + '</div>').join('') + '</div>' : '') +
+    '<div class="card"><h3>1. Pesaje por grupos</h3><table class="gtab"><thead><tr><th>Grupo</th><th>Cabezas</th><th>Peso (kg)</th></tr></thead><tbody>' + tabla +
+      '</tbody><tfoot><tr><td>Total</td><td>' + fmt(c.g.cab, 0) + '</td><td>' + fmtKg(c.g.pll) + '</td></tr></tfoot></table></div>' +
+    '<div class="card"><h3>2. Resultado general</h3><div class="res">' + bloqueRes(c.g) + '</div></div>' +
+    '<div class="card m"><h3>3. ♂ Machos <span class="folio">Folio interno: <b>' + (esc(d.mFolio) || '—') + '</b></span></h3><div class="res">' + bloqueRes(c.m) + '</div></div>' +
+    '<div class="card h"><h3>4. ♀ Hembras <span class="folio">Folio interno: <b>' + (esc(c.hFolio) || '—') + '</b></span></h3><div class="res">' + bloqueRes(c.h) + '</div></div>' +
+    '<div class="card"><h3>Verificación</h3><div class="ver">' + v.map(x => '<div class="' + (x.ok === true ? 'ok' : x.ok === false ? 'bad' : 'pend') + '">' + (x.ok === true ? '✅ ' : x.ok === false ? '⚠️ ' : '⏳ ') + esc(x.t) + '</div>').join('') + '</div></div>' +
+    '<div class="card"><h3 style="color:var(--red);border-color:#fecaca">5. Observaciones</h3><p class="rojo">' + (esc(d.obs.trim()) || 'Sin observaciones.') + '</p></div>' +
+    '<div class="card no-print"><h3>📲 Mensaje para WhatsApp</h3><pre class="wa">' + esc(reporteActual.msg) + '</pre></div>';
+  renderBotones();
+}
+
+function renderBotones(){
+  const r = reporteActual;
+  let h = '<button class="btn w" type="button" onclick="enviarWhatsApp()">📲 Enviar por WhatsApp</button>' +
+          '<button class="btn b" type="button" onclick="copiarMensaje()">📋 Copiar mensaje</button>';
+  if (r.origen === 'nuevo') {
+    h += '<button class="btn p" type="button" onclick="guardarReporte()"' + (r.guardado ? ' disabled' : '') + '>' + (r.guardado ? '✔ Reporte guardado' : '💾 Guardar reporte') + '</button>';
+    if (!EN_APK) h += '<button class="btn b" type="button" onclick="imprimir()">🖨️ Imprimir / Guardar PDF</button>';
+    h += '<button class="btn s" type="button" onclick="mostrar(\'edicion\')">✏️ Volver a editar datos</button>';
+    h += '<button class="btn d" type="button" onclick="reiniciar()">🔄 Nuevo registro (reiniciar)</button>';
+  } else {
+    if (!EN_APK) h += '<button class="btn b" type="button" onclick="imprimir()">🖨️ Imprimir / Guardar PDF</button>';
+    h += '<button class="btn s" type="button" onclick="cargarParaEditar()">✏️ Cargar para editar</button>';
+    h += '<button class="btn s" type="button" onclick="verGuardados()">⬅️ Volver a guardados</button>';
+  }
+  $('rep-botones').innerHTML = h;
+}
+
+function enviarWhatsApp(){
+  if (!reporteActual) return;
+  window.open('https://wa.me/?text=' + encodeURIComponent(reporteActual.msg), '_blank');
+}
+
+function copiarMensaje(){
+  if (!reporteActual) return;
+  const t = reporteActual.msg;
+  const ok = () => toast('Mensaje copiado ✅');
+  const alt = () => {
+    const ta = document.createElement('textarea');
+    ta.value = t; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { alert('No se pudo copiar el mensaje.'); }
+    ta.remove();
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, alt); else alt();
+}
+
+function imprimir(){
+  const d = reporteActual.datos, anterior = document.title;
+  document.title = 'Reporte ' + (d.ca || '') + ' ' + (d.sk || '');
+  if (window.AndroidApp && window.AndroidApp.print) window.AndroidApp.print(document.title);
+  else window.print();
+  setTimeout(() => { document.title = anterior; }, 1500);
+}
+
+/* ---------- Guardados ---------- */
+function leerLista(){ try { return JSON.parse(localStorage.getItem(KEY_REP)) || []; } catch (e) { return []; } }
+function actualizarContador(){ $('n-guardados').textContent = leerLista().length; }
+
+function guardarReporte(){
+  if (!reporteActual || reporteActual.guardado) return;
+  const lista = leerLista();
+  const item = { id: Date.now(), guardado: new Date().toISOString(), datos: reporteActual.datos };
+  lista.unshift(item);
+  try {
+    localStorage.setItem(KEY_REP, JSON.stringify(lista));
+    reporteActual.guardado = true;
+    reporteActual.id = item.id;
+    renderBotones(); actualizarContador();
+    toast('Reporte guardado ✅');
+  } catch (e) { alert('No se pudo guardar: ' + e.message); }
+}
+
+function verGuardados(){
+  const lista = leerLista();
+  $('lista').innerHTML = lista.length ? lista.map(it => {
+    const c = calcular(it.datos);
+    return '<div class="item"><div class="t"><b>CA ' + (esc(it.datos.ca) || '—') + ' · SK ' + (esc(it.datos.sk) || '—') + '</b><small>' + fechaBonita(it.datos.fecha) + ' · ' + fmt(c.g.cab, 0) + ' cab · merma ' + fmt(c.g.merma, 2) + ' %</small></div>' +
+           '<button type="button" style="background:#dcfce7;color:#15803d" onclick="abrirGuardado(' + it.id + ')">Abrir</button>' +
+           '<button type="button" style="background:#fee2e2;color:#dc2626" onclick="borrarGuardado(' + it.id + ')" aria-label="Borrar">🗑️</button></div>';
+  }).join('') : '<div class="vacio">Todavía no hay reportes guardados.</div>';
+  mostrar('guardados');
+}
+
+function abrirGuardado(id){
+  const it = leerLista().find(x => x.id === id);
+  if (!it) return;
+  reporteActual = { datos: it.datos, origen: 'guardado', guardado: true, id };
+  renderReporte();
+  mostrar('resumen');
+}
+
+function borrarGuardado(id){
+  if (!confirm('¿Borrar este reporte guardado? No se puede deshacer.')) return;
+  try { localStorage.setItem(KEY_REP, JSON.stringify(leerLista().filter(x => x.id !== id))); } catch (e) {}
+  actualizarContador(); verGuardados();
+}
+
+function cargarParaEditar(){
+  if (!confirm('Esto reemplaza lo que hay ahora en la captura. ¿Continuar?')) return;
+  const d = reporteActual.datos;
+  escribir(d);
+  try { localStorage.setItem(KEY_BORRADOR, JSON.stringify(d)); } catch (e) {}
+  reporteActual = null;
+  mostrar('edicion');
+}
+
+/* ---------- Inicio ---------- */
+window.addEventListener('load', () => {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(KEY_BORRADOR)); } catch (e) {}
+  escribir(d && typeof d === 'object' ? Object.assign(vacio(), d) : vacio());
+  actualizarContador();
+  mostrar('edicion');
+  if (!EN_APK && 'serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.error('SW:', err));
+  }
+});
+</script>
+</body>
+</html>
